@@ -1,4 +1,4 @@
-# from parsel import Selector
+from parsel import Selector
 import requests
 import time
 
@@ -20,7 +20,9 @@ def fetch(url):
 
 # Requisito 2
 def scrape_updates(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+    news_links = selector.css('h2.entry-title a::attr(href)').getall()
+    return news_links
 
 
 # Requisito 3
@@ -38,4 +40,6 @@ def get_tech_news(amount):
     """Seu código deve vir aqui"""
 
 
-fetch("https://blog.betrybe.com/")
+# html_content = fetch("https://blog.betrybe.com/")
+
+# print(scrape_updates(html_content))
