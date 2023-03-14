@@ -28,6 +28,9 @@ def scrape_updates(html_content):
 # Requisito 3
 def scrape_next_page_link(html_content):
     """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+    next_link = selector.css('a.next::attr(href)').get()
+    return next_link
 
 
 # Requisito 4
@@ -40,6 +43,7 @@ def get_tech_news(amount):
     """Seu código deve vir aqui"""
 
 
-# html_content = fetch("https://blog.betrybe.com/")
+html_content = fetch("https://blog.betrybe.com/")
 
 # print(scrape_updates(html_content))
+print(scrape_next_page_link(html_content))
