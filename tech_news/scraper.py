@@ -1,6 +1,8 @@
 from parsel import Selector
 import requests
 import time
+import math
+from tech_news.database import create_news
 
 
 class News:
@@ -77,16 +79,45 @@ def scrape_news(html_content):
     return news.get_news()
 
 
+def handle_next_num(amount):
+    """how many times scrape updates should run"""
+    runs = amount / 12
+    return math.ceil(runs)
+
+
+def scrape_page_news(news_urls, amount):
+    news = []
+    for url in news_urls:
+        news_html_content = fetch(url)
+        if news_html_content is None:
+            break
+        scrapped_data = scrape_news(news_html_content)
+        if scrapped_data is None:
+            break
+        news.append(scrapped_data)
+        if len(news) == amount:
+            break
+    return news
+
+
+def get_urls(main_html_content, next_num, amount):
+    main_html_content = main_html_content
+    news_urls = []
+    for current_iteration in range(next_num):
+        news_urls = [*news_urls, *scrape_updates(main_html_content)]
+        if current_iteration < next_num:
+            next_link = scrape_next_page_link(main_html_content)
+            main_html_content = fetch(next_link)
+    return news_urls[:amount]
+
+
 # Requisito 5
 def get_tech_news(amount):
     """Seu código deve vir aqui"""
-
-
-# html_content = fetch("https://blog.betrybe.com/")
-# html_content = fetch(
-#     "https://blog.betrybe.com/linguagem-de-programacao/o-que-e-array/"
-# )
-
-# print(scrape_updates(html_content))
-# print(scrape_next_page_link(html_content))
-# print(scrape_news(html_content))
+    news = []
+    next_num = handle_next_num(amount)
+    main_html_content = fetch("https://blog.betrybe.com/")
+    news_urls = get_urls(main_html_content, next_num, amount)
+    news = [*news, *scrape_page_news(news_urls, amount)]
+    create_news(news)
+    return news
