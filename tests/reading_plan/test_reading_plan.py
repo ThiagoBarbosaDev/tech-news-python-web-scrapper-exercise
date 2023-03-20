@@ -28,6 +28,7 @@ def test_reading_plan_group_news():
         ],
         "unreadable": [("noticia_8", 8)],
     }
+
     with patch("tech_news.analyzer.reading_plan.find_news", return_value=NEWS):
         mocked_return = ReadingPlanService.group_news_for_available_time(7)
         assert (
